@@ -1,0 +1,3251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DisasterShield | Stay Prepared. Stay Safe.</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- Leaflet -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <style>
+        :root {
+            --navy: #0f172a;
+            --blue: #2563eb;
+            --blue-dark: #1d4ed8;
+            --light-blue: #eff6ff;
+            --red: #dc2626;
+            --green: #16a34a;
+            --orange: #ea580c;
+            --yellow: #f59e0b;
+            --bg: #f8fafc;
+            --white: #ffffff;
+            --text: #334155;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 21px;
+            font-weight: 800;
+            color: var(--navy);
+        }
+
+        .logo i {
+            color: var(--red);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .nav-links a {
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--blue);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            padding: 11px 17px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--blue-dark);
+        }
+
+        .btn-danger {
+            background: var(--red);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--navy);
+        }
+
+        .btn-outline:hover {
+            background: var(--light-blue);
+        }
+
+        .mobile-menu {
+            display: none;
+            border: none;
+            background: none;
+            font-size: 22px;
+        }
+
+        /* ================= HERO ================= */
+
+        .hero {
+            min-height: 590px;
+            display: flex;
+            align-items: center;
+            color: white;
+            background:
+                linear-gradient(
+                    rgba(15, 23, 42, 0.78),
+                    rgba(15, 23, 42, 0.78)
+                ),
+                url("https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=1800&q=85")
+                center/cover;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: auto;
+            padding: 70px 20px;
+        }
+
+        .hero-content {
+            max-width: 700px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 7px 13px;
+            border-radius: 30px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .hero h1 {
+            font-size: clamp(38px, 6vw, 68px);
+            line-height: 1.05;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+
+        .hero h1 span {
+            color: #60a5fa;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: #e2e8f0;
+            margin-bottom: 30px;
+            max-width: 650px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .hero .btn-outline {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.3);
+            color: white;
+        }
+
+        /* ================= GENERAL ================= */
+
+        .section {
+            padding: 75px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .section-heading {
+            margin-bottom: 35px;
+        }
+
+        .section-heading.center {
+            text-align: center;
+        }
+
+        .section-heading h2 {
+            font-size: 34px;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            max-width: 700px;
+        }
+
+        .center p {
+            margin: auto;
+        }
+
+        /* ================= RISK DASHBOARD ================= */
+
+        .dashboard {
+            margin-top: -45px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .risk-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .risk-card {
+            background: white;
+            padding: 24px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .risk-card .icon {
+            width: 45px;
+            height: 45px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: var(--light-blue);
+            color: var(--blue);
+            margin-bottom: 15px;
+        }
+
+        .risk-card h3 {
+            font-size: 15px;
+            margin-bottom: 5px;
+            color: var(--navy);
+        }
+
+        .risk-value {
+            font-size: 25px;
+            font-weight: 800;
+        }
+
+        .risk-low {
+            color: var(--green);
+        }
+
+        .risk-medium {
+            color: var(--yellow);
+        }
+
+        .risk-high {
+            color: var(--red);
+        }
+
+        /* ================= ALERTS ================= */
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .filter-btn {
+            padding: 9px 15px;
+            border-radius: 25px;
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: var(--blue);
+            color: white;
+            border-color: var(--blue);
+        }
+
+        .alert-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .alert-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-left: 5px solid var(--red);
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(15,23,42,0.04);
+        }
+
+        .alert-card.medium {
+            border-left-color: var(--yellow);
+        }
+
+        .alert-card.low {
+            border-left-color: var(--green);
+        }
+
+        .alert-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 13px;
+        }
+
+        .alert-tag {
+            padding: 5px 9px;
+            font-size: 11px;
+            font-weight: 800;
+            border-radius: 20px;
+            background: #fee2e2;
+            color: var(--red);
+        }
+
+        .alert-card.medium .alert-tag {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .alert-card.low .alert-tag {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .alert-card h3 {
+            color: var(--navy);
+            margin-bottom: 7px;
+        }
+
+        .alert-card p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* ================= MAP ================= */
+
+        #map {
+            height: 450px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .map-legend {
+            margin-top: 15px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .legend-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+
+        /* ================= SHELTERS ================= */
+
+        .shelter-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .shelter-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        .shelter-card i {
+            font-size: 25px;
+            color: var(--blue);
+            margin-bottom: 15px;
+        }
+
+        .shelter-card h3 {
+            color: var(--navy);
+            margin-bottom: 6px;
+        }
+
+        .shelter-card p {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        /* ================= EMERGENCY SERVICES ================= */
+
+        .emergency-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .emergency-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .emergency-card i {
+            font-size: 30px;
+            margin-bottom: 12px;
+            color: var(--red);
+        }
+
+        .emergency-card h3 {
+            color: var(--navy);
+            margin-bottom: 5px;
+        }
+
+        .emergency-number {
+            font-size: 25px;
+            font-weight: 800;
+            color: var(--red);
+            margin-bottom: 12px;
+        }
+
+        /* ================= GUIDES ================= */
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .guide-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 23px;
+            transition: 0.25s;
+        }
+
+        .guide-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .guide-card i {
+            font-size: 27px;
+            color: var(--blue);
+            margin-bottom: 14px;
+        }
+
+        .guide-card h3 {
+            color: var(--navy);
+            margin-bottom: 7px;
+        }
+
+        .guide-card p {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 15px;
+        }
+
+        /* ================= CHECKLIST ================= */
+
+        .checklist-wrapper {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+        }
+
+        .checklist {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 13px;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px;
+            border-radius: 9px;
+            background: #f8fafc;
+        }
+
+        .check-item input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .check-item.checked label {
+            text-decoration: line-through;
+            color: var(--muted);
+        }
+
+        /* ================= CONTACTS ================= */
+
+        .contact-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 27px;
+            box-shadow: var(--shadow);
+        }
+
+        .panel h3 {
+            color: var(--navy);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--navy);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 11px 13px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            outline: none;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .contact-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .saved-contact {
+            padding: 15px;
+            border-radius: 9px;
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* ================= AI ================= */
+
+        .ai-box {
+            background: linear-gradient(135deg, #eff6ff, #ffffff);
+            border: 1px solid #bfdbfe;
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .ai-inputs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .prediction {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            background: white;
+            border: 1px solid var(--border);
+        }
+
+        .prediction h3 {
+            margin-bottom: 7px;
+        }
+
+        /* ================= REPORT ================= */
+
+        .report-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        /* ================= ADMIN ================= */
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .admin-stat {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            padding: 22px;
+        }
+
+        .admin-stat span {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .admin-stat strong {
+            display: block;
+            font-size: 30px;
+            color: var(--navy);
+        }
+
+        .chart-box {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+        }
+
+        /* ================= SOS ================= */
+
+        .sos-section {
+            background: #7f1d1d;
+            color: white;
+            text-align: center;
+        }
+
+        .sos-section h2 {
+            font-size: 38px;
+            margin-bottom: 10px;
+        }
+
+        .sos-section p {
+            color: #fecaca;
+            margin-bottom: 25px;
+        }
+
+        .sos-button {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 8px solid rgba(255,255,255,0.2);
+            background: var(--red);
+            color: white;
+            font-size: 25px;
+            font-weight: 800;
+            box-shadow: 0 0 0 10px rgba(255,255,255,0.08);
+        }
+
+        /* ================= MODAL ================= */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            background: rgba(15,23,42,0.7);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-box {
+            position: relative;
+            max-width: 750px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 17px;
+            padding: 30px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 18px;
+            top: 15px;
+            border: none;
+            background: #f1f5f9;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+        }
+
+        .modal-box h2 {
+            color: var(--navy);
+            padding-right: 45px;
+        }
+
+        /* ================= GUIDE MODAL ================= */
+
+        .guide-section {
+            margin-top: 22px;
+            padding: 18px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .guide-section h3 {
+            margin-bottom: 12px;
+            color: var(--navy);
+        }
+
+        .guide-section h3 i {
+            color: var(--blue);
+            margin-right: 7px;
+        }
+
+        .guide-section p {
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .guide-section ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+
+        .guide-section li {
+            margin-bottom: 9px;
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .dos-section {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .dos-section h3 {
+            color: #15803d;
+        }
+
+        .dos-section h3 i {
+            color: #16a34a;
+        }
+
+        .donts-section {
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .donts-section h3 {
+            color: #b91c1c;
+        }
+
+        .donts-section h3 i {
+            color: #dc2626;
+        }
+
+        .guide-emergency {
+            margin-top: 22px;
+            padding: 18px;
+            border-radius: 12px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+        }
+
+        .guide-emergency h3 {
+            color: #c2410c;
+            margin-bottom: 8px;
+        }
+
+        .guide-emergency h3 i {
+            margin-right: 7px;
+        }
+
+        .guide-emergency p {
+            color: #7c2d12;
+            font-size: 14px;
+        }
+
+        /* ================= TOAST ================= */
+
+        .toast {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 5000;
+            background: var(--navy);
+            color: white;
+            padding: 14px 18px;
+            border-radius: 9px;
+            display: none;
+            box-shadow: var(--shadow);
+        }
+
+        /* ================= FOOTER ================= */
+
+        footer {
+            background: var(--navy);
+            color: #cbd5e1;
+            padding: 45px 20px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 35px;
+        }
+
+        footer h3 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        footer p,
+        footer a {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .copyright {
+            max-width: 1200px;
+            margin: 30px auto 0;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1000px) {
+            .risk-grid,
+            .emergency-grid,
+            .admin-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .alert-grid,
+            .shelter-grid,
+            .guide-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 750px) {
+            .nav-links,
+            .nav-actions {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .risk-grid,
+            .alert-grid,
+            .shelter-grid,
+            .emergency-grid,
+            .guide-grid,
+            .checklist,
+            .contact-layout,
+            .report-layout,
+            .ai-inputs,
+            .admin-grid,
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                min-height: 520px;
+            }
+
+            .hero h1 {
+                font-size: 42px;
+            }
+
+            .section {
+                padding: 55px 15px;
+            }
+
+            .modal-box {
+                margin: 20px auto;
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+    <div class="nav-container">
+
+        <a href="#home" class="logo">
+            <i class="fa-solid fa-shield-heart"></i>
+            DisasterShield
+        </a>
+
+        <div class="nav-links">
+            <a href="#alerts">Alerts</a>
+            <a href="#map-section">Map</a>
+            <a href="#shelters">Shelters</a>
+            <a href="#guides">Guides</a>
+            <a href="#ai">AI Risk</a>
+            <a href="#report">Report</a>
+        </div>
+
+        <div class="nav-actions">
+            <button class="btn btn-danger" onclick="openSOS()">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                SOS
+            </button>
+
+            <button class="btn btn-outline" onclick="openModal('loginModal')">
+                Login
+            </button>
+        </div>
+
+        <button class="mobile-menu" onclick="toggleMobileMenu()">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+    </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+
+<section class="hero" id="home">
+    <div class="hero-container">
+
+        <div class="hero-content">
+
+            <span class="hero-badge">
+                <i class="fa-solid fa-circle-check"></i>
+                Emergency Preparedness Platform
+            </span>
+
+            <h1>
+                Stay Prepared.<br>
+                <span>Stay Safe.</span>
+            </h1>
+
+            <p>
+                DisasterShield helps communities monitor disaster risks,
+                receive alerts, locate shelters, learn safety procedures,
+                and respond quickly during emergencies.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="#alerts" class="btn btn-primary">
+                    <i class="fa-solid fa-bell"></i>
+                    View Alerts
+                </a>
+
+                <a href="#guides" class="btn btn-outline">
+                    <i class="fa-solid fa-book"></i>
+                    Safety Guides
+                </a>
+
+                <button class="btn btn-danger" onclick="openSOS()">
+                    <i class="fa-solid fa-phone"></i>
+                    Emergency SOS
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<!-- ================= RISK DASHBOARD ================= -->
+
+<section class="dashboard">
+    <div class="container">
+
+        <div class="risk-grid">
+
+            <div class="risk-card">
+                <div class="icon">
+                    <i class="fa-solid fa-cloud-showers-heavy"></i>
+                </div>
+                <h3>Flood Risk</h3>
+                <div class="risk-value risk-medium">Medium</div>
+            </div>
+
+            <div class="risk-card">
+                <div class="icon">
+                    <i class="fa-solid fa-wind"></i>
+                </div>
+                <h3>Cyclone Risk</h3>
+                <div class="risk-value risk-low">Low</div>
+            </div>
+
+            <div class="risk-card">
+                <div class="icon">
+                    <i class="fa-solid fa-house-crack"></i>
+                </div>
+                <h3>Earthquake Risk</h3>
+                <div class="risk-value risk-low">Low</div>
+            </div>
+
+            <div class="risk-card">
+                <div class="icon">
+                    <i class="fa-solid fa-temperature-high"></i>
+                </div>
+                <h3>Heatwave Risk</h3>
+                <div class="risk-value risk-high">High</div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<!-- ================= ALERTS ================= -->
+
+<section class="section" id="alerts">
+
+    <div class="container">
+
+        <div class="section-heading">
+            <h2>Active Disaster Alerts</h2>
+            <p>
+                Monitor current disaster situations and emergency warnings.
+            </p>
+        </div>
+
+        <div class="filters">
+
+            <button class="filter-btn active" onclick="filterAlerts('all', this)">
+                All
+            </button>
+
+            <button class="filter-btn" onclick="filterAlerts('flood', this)">
+                Flood
+            </button>
+
+            <button class="filter-btn" onclick="filterAlerts('cyclone', this)">
+                Cyclone
+            </button>
+
+            <button class="filter-btn" onclick="filterAlerts('fire', this)">
+                Fire
+            </button>
+
+            <button class="filter-btn" onclick="filterAlerts('heatwave', this)">
+                Heatwave
+            </button>
+
+        </div>
+
+        <div class="alert-grid">
+
+            <div class="alert-card" data-type="flood">
+                <div class="alert-top">
+                    <strong>Chennai Region</strong>
+                    <span class="alert-tag">WARNING</span>
+                </div>
+                <h3>Flood Watch</h3>
+                <p>
+                    Heavy rainfall may cause localized flooding in
+                    low-lying areas. Avoid unnecessary travel.
+                </p>
+            </div>
+
+            <div class="alert-card medium" data-type="cyclone">
+                <div class="alert-top">
+                    <strong>Coastal Areas</strong>
+                    <span class="alert-tag">WATCH</span>
+                </div>
+                <h3>Cyclone Monitoring</h3>
+                <p>
+                    Coastal weather conditions are being monitored.
+                    Stay updated with official announcements.
+                </p>
+            </div>
+
+            <div class="alert-card low" data-type="fire">
+                <div class="alert-top">
+                    <strong>Urban Area</strong>
+                    <span class="alert-tag">LOW</span>
+                </div>
+                <h3>Fire Safety Advisory</h3>
+                <p>
+                    Residents are advised to keep emergency exits
+                    clear and check electrical connections.
+                </p>
+            </div>
+
+            <div class="alert-card" data-type="heatwave">
+                <div class="alert-top">
+                    <strong>Tamil Nadu</strong>
+                    <span class="alert-tag">HIGH</span>
+                </div>
+                <h3>Heatwave Advisory</h3>
+                <p>
+                    High temperatures expected. Stay hydrated and
+                    avoid direct sunlight during peak hours.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= MAP ================= -->
+
+<section class="section" id="map-section">
+
+    <div class="container">
+
+        <div class="section-heading">
+            <h2>Disaster & Safety Map</h2>
+            <p>
+                View example disaster zones and nearby emergency shelters.
+            </p>
+        </div>
+
+        <div id="map"></div>
+
+        <div class="map-legend">
+
+            <div class="legend-item">
+                <span class="legend-dot" style="background:#dc2626;"></span>
+                High Risk
+            </div>
+
+            <div class="legend-item">
+                <span class="legend-dot" style="background:#f59e0b;"></span>
+                Medium Risk
+            </div>
+
+            <div class="legend-item">
+                <span class="legend-dot" style="background:#16a34a;"></span>
+                Safe Zone
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= SHELTERS ================= -->
+
+<section class="section" id="shelters">
+
+    <div class="container">
+
+        <div class="section-heading">
+            <h2>Emergency Shelters & Safe Zones</h2>
+            <p>
+                Find example safe locations where people can move during
+                emergencies.
+            </p>
+        </div>
+
+        <div class="shelter-grid">
+
+            <div class="shelter-card">
+                <i class="fa-solid fa-building-columns"></i>
+                <h3>Community Relief Center</h3>
+                <p>
+                    Temporary shelter with basic emergency facilities.
+                </p>
+                <button
+                    class="btn btn-primary"
+                    onclick="showToast('Shelter location selected')"
+                >
+                    View Location
+                </button>
+            </div>
+
+            <div class="shelter-card">
+                <i class="fa-solid fa-school"></i>
+                <h3>Emergency School Shelter</h3>
+                <p>
+                    Designated evacuation facility for nearby residents.
+                </p>
+                <button
+                    class="btn btn-primary"
+                    onclick="showToast('Shelter location selected')"
+                >
+                    View Location
+                </button>
+            </div>
+
+            <div class="shelter-card">
+                <i class="fa-solid fa-hospital"></i>
+                <h3>Medical Relief Point</h3>
+                <p>
+                    Emergency medical assistance and first-aid support.
+                </p>
+                <button
+                    class="btn btn-primary"
+                    onclick="showToast('Medical location selected')"
+                >
+                    View Location
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= EMERGENCY SERVICES ================= -->
+
+<section class="section">
+
+    <div class="container">
+
+        <div class="section-heading center">
+            <h2>Emergency Services</h2>
+            <p>
+                Important emergency numbers for immediate assistance.
+            </p>
+        </div>
+
+        <div class="emergency-grid">
+
+            <div class="emergency-card">
+                <i class="fa-solid fa-phone"></i>
+                <h3>Emergency</h3>
+                <div class="emergency-number">112</div>
+                <a href="tel:112" class="btn btn-danger">
+                    Call
+                </a>
+            </div>
+
+            <div class="emergency-card">
+                <i class="fa-solid fa-fire-extinguisher"></i>
+                <h3>Fire</h3>
+                <div class="emergency-number">101</div>
+                <a href="tel:101" class="btn btn-danger">
+                    Call
+                </a>
+            </div>
+
+            <div class="emergency-card">
+                <i class="fa-solid fa-truck-medical"></i>
+                <h3>Ambulance</h3>
+                <div class="emergency-number">108</div>
+                <a href="tel:108" class="btn btn-danger">
+                    Call
+                </a>
+            </div>
+
+            <div class="emergency-card">
+                <i class="fa-solid fa-building-shield"></i>
+                <h3>Police</h3>
+                <div class="emergency-number">100</div>
+                <a href="tel:100" class="btn btn-danger">
+                    Call
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= GUIDES ================= -->
+
+<section class="section" id="guides">
+
+    <div class="container">
+
+        <div class="section-heading center">
+            <h2>Disaster Preparedness Guides</h2>
+            <p>
+                Learn what to do before, during, and after different
+                types of disasters.
+            </p>
+        </div>
+
+        <div class="guide-grid">
+
+            <div class="guide-card">
+                <i class="fa-solid fa-water"></i>
+                <h3>Flood</h3>
+                <p>
+                    Learn how to prepare for flooding and move safely
+                    to higher ground.
+                </p>
+                <button
+                    class="btn btn-primary"
+                    onclick="openGuide('Flood')"
+                >
+                    Read Guide
+                </button>
+            </div>
+
+            <div class="guide-card">
+                <i class="fa-solid fa-wind"></i>
+                <h3>Cyclone</h3>
+                <p>
+                    Prepare your home and family for strong winds,
+                    rainfall and storm surge.
+                </p>
+                <button
+                    class="btn btn-primary"
+                    onclick="openGuide('Cyclone')"
+                >
+                    Read Guide
+                </button>
+            </div>
+
+            <div class="guide-card">
+                <i class="fa-solid fa-house-crack"></i>
+                <h3>Earthquake</h3>
+                <p>
+                    Learn the Drop, Cover and Hold On safety method.
+                </p>
+                <button
+                    class="btn btn-primary"
+                    onclick="openGuide('Earthquake')"
+                >
+                    Read Guide
+                </button>
+            </div>
+
+            <div class="guide-card">
+                <i class="fa-solid fa-fire"></i>
+                <h3>Fire</h3>
+                <p>
+                    Understand fire prevention, evacuation and smoke safety.
+                </p>
+                <button
+                    class="btn btn-primary"
+                    onclick="openGuide('Fire')"
+                >
+                    Read Guide
+                </button>
+            </div>
+
+            <div class="guide-card">
+                <i class="fa-solid fa-water"></i>
+                <h3>Tsunami</h3>
+                <p>
+                    Learn how to respond quickly to tsunami warnings.
+                </p>
+                <button
+                    class="btn btn-primary"
+                    onclick="openGuide('Tsunami')"
+                >
+                    Read Guide
+                </button>
+            </div>
+
+            <div class="guide-card">
+                <i class="fa-solid fa-mountain"></i>
+                <h3>Landslide</h3>
+                <p>
+                    Recognize warning signs and evacuate dangerous slopes.
+                </p>
+                <button
+                    class="btn btn-primary"
+                    onclick="openGuide('Landslide')"
+                >
+                    Read Guide
+                </button>
+            </div>
+
+            <div class="guide-card">
+                <i class="fa-solid fa-temperature-high"></i>
+                <h3>Heatwave</h3>
+                <p>
+                    Protect yourself from extreme heat and dehydration.
+                </p>
+                <button
+                    class="btn btn-primary"
+                    onclick="openGuide('Heatwave')"
+                >
+                    Read Guide
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= CHECKLIST ================= -->
+
+<section class="section">
+
+    <div class="container">
+
+        <div class="section-heading">
+            <h2>Emergency Kit Checklist</h2>
+            <p>
+                Prepare essential supplies before an emergency occurs.
+            </p>
+        </div>
+
+        <div class="checklist-wrapper">
+
+            <div class="checklist">
+
+                <div class="check-item">
+                    <input type="checkbox" id="kit1">
+                    <label for="kit1">Drinking water</label>
+                </div>
+
+                <div class="check-item">
+                    <input type="checkbox" id="kit2">
+                    <label for="kit2">First-aid kit</label>
+                </div>
+
+                <div class="check-item">
+                    <input type="checkbox" id="kit3">
+                    <label for="kit3">Flashlight</label>
+                </div>
+
+                <div class="check-item">
+                    <input type="checkbox" id="kit4">
+                    <label for="kit4">Extra batteries</label>
+                </div>
+
+                <div class="check-item">
+                    <input type="checkbox" id="kit5">
+                    <label for="kit5">Emergency food</label>
+                </div>
+
+                <div class="check-item">
+                    <input type="checkbox" id="kit6">
+                    <label for="kit6">Power bank</label>
+                </div>
+
+                <div class="check-item">
+                    <input type="checkbox" id="kit7">
+                    <label for="kit7">Important documents</label>
+                </div>
+
+                <div class="check-item">
+                    <input type="checkbox" id="kit8">
+                    <label for="kit8">Basic medicines</label>
+                </div>
+
+            </div>
+
+            <br>
+
+            <button class="btn btn-primary" onclick="saveChecklist()">
+                <i class="fa-solid fa-floppy-disk"></i>
+                Save Checklist
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= CONTACTS ================= -->
+
+<section class="section">
+
+    <div class="container">
+
+        <div class="section-heading">
+            <h2>Emergency Contacts</h2>
+            <p>
+                Save important personal emergency contacts.
+            </p>
+        </div>
+
+        <div class="contact-layout">
+
+            <div class="panel">
+
+                <h3>
+                    <i class="fa-solid fa-user-plus"></i>
+                    Add Contact
+                </h3>
+
+                <div class="form-group">
+                    <label>Name</label>
+                    <input
+                        type="text"
+                        id="contactName"
+                        placeholder="Contact name"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input
+                        type="tel"
+                        id="contactPhone"
+                        placeholder="Phone number"
+                    >
+                </div>
+
+                <button class="btn btn-primary" onclick="addContact()">
+                    Add Contact
+                </button>
+
+            </div>
+
+            <div class="panel">
+
+                <h3>
+                    <i class="fa-solid fa-address-book"></i>
+                    Saved Contacts
+                </h3>
+
+                <div class="contact-list" id="contactList"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= AI RISK ================= -->
+
+<section class="section" id="ai">
+
+    <div class="container">
+
+        <div class="section-heading">
+            <h2>AI Disaster Risk Prediction</h2>
+            <p>
+                Enter sample environmental conditions to estimate flood risk.
+            </p>
+        </div>
+
+        <div class="ai-box">
+
+            <div class="ai-inputs">
+
+                <div class="form-group">
+                    <label>Rainfall (mm)</label>
+                    <input
+                        type="number"
+                        id="rainfall"
+                        placeholder="Example: 120"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Water Level (m)</label>
+                    <input
+                        type="number"
+                        id="waterLevel"
+                        placeholder="Example: 3"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Humidity (%)</label>
+                    <input
+                        type="number"
+                        id="humidity"
+                        placeholder="Example: 80"
+                    >
+                </div>
+
+            </div>
+
+            <button class="btn btn-primary" onclick="predictRisk()">
+                <i class="fa-solid fa-brain"></i>
+                Predict Risk
+            </button>
+
+            <div class="prediction" id="predictionBox">
+                <h3 id="predictionTitle"></h3>
+                <p id="predictionText"></p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= REPORT ================= -->
+
+<section class="section" id="report">
+
+    <div class="container">
+
+        <div class="section-heading">
+            <h2>Report a Disaster Incident</h2>
+            <p>
+                Submit information about flooding, fire, damaged roads,
+                landslides or other hazards.
+            </p>
+        </div>
+
+        <div class="report-layout">
+
+            <div class="panel">
+
+                <h3>
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Incident Report
+                </h3>
+
+                <div class="form-group">
+                    <label>Disaster Type</label>
+
+                    <select id="incidentType">
+                        <option>Flood</option>
+                        <option>Cyclone</option>
+                        <option>Earthquake</option>
+                        <option>Fire</option>
+                        <option>Landslide</option>
+                        <option>Heatwave</option>
+                        <option>Other</option>
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+                    <label>Location</label>
+                    <input
+                        type="text"
+                        id="incidentLocation"
+                        placeholder="Enter incident location"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+
+                    <textarea
+                        id="incidentDescription"
+                        placeholder="Describe the incident..."
+                    ></textarea>
+
+                </div>
+
+                <button
+                    class="btn btn-danger"
+                    onclick="submitIncident()"
+                >
+                    Submit Report
+                </button>
+
+            </div>
+
+            <div class="panel">
+
+                <h3>
+                    <i class="fa-solid fa-circle-info"></i>
+                    Reporting Information
+                </h3>
+
+                <p>
+                    Provide accurate information when reporting an incident.
+                    Include the location, type of disaster and important
+                    details that can help emergency responders.
+                </p>
+
+                <br>
+
+                <ul>
+                    <li>Do not spread unverified information.</li>
+                    <li>Do not put yourself in danger to collect information.</li>
+                    <li>Call emergency services for life-threatening situations.</li>
+                    <li>Follow official evacuation instructions.</li>
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= ADMIN ================= -->
+
+<section class="section">
+
+    <div class="container">
+
+        <div class="section-heading">
+            <h2>Admin Dashboard</h2>
+            <p>
+                Example monitoring statistics for the disaster management system.
+            </p>
+        </div>
+
+        <div class="admin-grid">
+
+            <div class="admin-stat">
+                <span>Active Alerts</span>
+                <strong>04</strong>
+            </div>
+
+            <div class="admin-stat">
+                <span>Safe Shelters</span>
+                <strong>12</strong>
+            </div>
+
+            <div class="admin-stat">
+                <span>Reports</span>
+                <strong id="reportCount">08</strong>
+            </div>
+
+            <div class="admin-stat">
+                <span>Registered Users</span>
+                <strong>128</strong>
+            </div>
+
+        </div>
+
+        <div class="chart-box">
+            <canvas id="disasterChart"></canvas>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= SOS ================= -->
+
+<section class="section sos-section">
+
+    <div class="container">
+
+        <h2>Emergency SOS</h2>
+
+        <p>
+            Use SOS when you need immediate emergency assistance.
+        </p>
+
+        <button class="sos-button" onclick="openSOS()">
+            SOS
+        </button>
+
+    </div>
+
+</section>
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    <div class="footer-container">
+
+        <div>
+            <h3>
+                <i class="fa-solid fa-shield-heart"></i>
+                DisasterShield
+            </h3>
+
+            <p>
+                A disaster preparedness and emergency management
+                web application designed to help individuals and
+                communities stay informed and prepared.
+            </p>
+        </div>
+
+        <div>
+            <h3>Quick Links</h3>
+
+            <div class="footer-links">
+                <a href="#alerts">Alerts</a>
+                <a href="#map-section">Map</a>
+                <a href="#shelters">Shelters</a>
+                <a href="#guides">Safety Guides</a>
+            </div>
+        </div>
+
+        <div>
+            <h3>Emergency</h3>
+
+            <div class="footer-links">
+                <a href="tel:112">Emergency: 112</a>
+                <a href="tel:108">Ambulance: 108</a>
+                <a href="tel:101">Fire: 101</a>
+                <a href="tel:100">Police: 100</a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="copyright">
+        © 2026 DisasterShield. Academic Project — Disaster Management Web Application.
+    </div>
+
+</footer>
+
+<!-- ================= GUIDE MODAL ================= -->
+
+<div class="modal" id="guideModal">
+
+    <div class="modal-box">
+
+        <button
+            class="modal-close"
+            onclick="closeModal('guideModal')"
+        >
+            ✕
+        </button>
+
+        <h2 id="guideTitle">
+            Disaster Preparedness Guide
+        </h2>
+
+        <p
+            id="guideIntro"
+            style="color:#64748b;margin:8px 0 25px;"
+        >
+            Follow these safety instructions during an emergency.
+        </p>
+
+        <div class="guide-section">
+
+            <h3>
+                <i class="fa-solid fa-shield-halved"></i>
+                Precautions
+            </h3>
+
+            <ul id="guidePrecautions"></ul>
+
+        </div>
+
+        <div class="guide-section">
+
+            <h3>
+                <i class="fa-solid fa-clock"></i>
+                Before the Disaster
+            </h3>
+
+            <p id="guideBefore"></p>
+
+        </div>
+
+        <div class="guide-section">
+
+            <h3>
+                <i class="fa-solid fa-person-running"></i>
+                During the Disaster
+            </h3>
+
+            <p id="guideDuring"></p>
+
+        </div>
+
+        <div class="guide-section">
+
+            <h3>
+                <i class="fa-solid fa-house-circle-check"></i>
+                After the Disaster
+            </h3>
+
+            <p id="guideAfter"></p>
+
+        </div>
+
+        <div class="guide-section dos-section">
+
+            <h3>
+                <i class="fa-solid fa-circle-check"></i>
+                Do's
+            </h3>
+
+            <ul id="guideDos"></ul>
+
+        </div>
+
+        <div class="guide-section donts-section">
+
+            <h3>
+                <i class="fa-solid fa-circle-xmark"></i>
+                Don'ts
+            </h3>
+
+            <ul id="guideDonts"></ul>
+
+        </div>
+
+        <div class="guide-emergency">
+
+            <h3>
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Emergency Action
+            </h3>
+
+            <p id="guideEmergency"></p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= LOGIN MODAL ================= -->
+
+<div class="modal" id="loginModal">
+
+    <div class="modal-box">
+
+        <button
+            class="modal-close"
+            onclick="closeModal('loginModal')"
+        >
+            ✕
+        </button>
+
+        <h2>Login</h2>
+
+        <br>
+
+        <div class="form-group">
+            <label>Email</label>
+            <input
+                type="email"
+                id="loginEmail"
+                placeholder="Enter email"
+            >
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input
+                type="password"
+                id="loginPassword"
+                placeholder="Enter password"
+            >
+        </div>
+
+        <button
+            class="btn btn-primary"
+            onclick="loginUser()"
+        >
+            Login
+        </button>
+
+        <button
+            class="btn btn-outline"
+            onclick="closeModal('loginModal');openModal('registerModal')"
+        >
+            Create Account
+        </button>
+
+    </div>
+
+</div>
+
+<!-- ================= REGISTER MODAL ================= -->
+
+<div class="modal" id="registerModal">
+
+    <div class="modal-box">
+
+        <button
+            class="modal-close"
+            onclick="closeModal('registerModal')"
+        >
+            ✕
+        </button>
+
+        <h2>Create Account</h2>
+
+        <br>
+
+        <div class="form-group">
+            <label>Name</label>
+            <input
+                type="text"
+                id="registerName"
+                placeholder="Enter your name"
+            >
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <input
+                type="email"
+                id="registerEmail"
+                placeholder="Enter email"
+            >
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input
+                type="password"
+                id="registerPassword"
+                placeholder="Create password"
+            >
+        </div>
+
+        <button
+            class="btn btn-primary"
+            onclick="registerUser()"
+        >
+            Register
+        </button>
+
+    </div>
+
+</div>
+
+<!-- ================= SOS MODAL ================= -->
+
+<div class="modal" id="sosModal">
+
+    <div class="modal-box" style="text-align:center;">
+
+        <button
+            class="modal-close"
+            onclick="closeModal('sosModal')"
+        >
+            ✕
+        </button>
+
+        <i
+            class="fa-solid fa-triangle-exclamation"
+            style="font-size:55px;color:#dc2626;margin-bottom:15px;"
+        ></i>
+
+        <h2>Emergency SOS</h2>
+
+        <p style="margin:15px 0;color:#64748b;">
+            If you are in immediate danger, contact emergency services.
+        </p>
+
+        <a
+            href="tel:112"
+            class="btn btn-danger"
+            style="display:inline-block;margin:5px;"
+        >
+            <i class="fa-solid fa-phone"></i>
+            Call 112
+        </a>
+
+        <a
+            href="tel:108"
+            class="btn btn-danger"
+            style="display:inline-block;margin:5px;"
+        >
+            <i class="fa-solid fa-truck-medical"></i>
+            Ambulance
+        </a>
+
+    </div>
+
+</div>
+
+<!-- ================= TOAST ================= -->
+
+<div class="toast" id="toast"></div>
+
+<!-- Leaflet -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+    /* =========================================================
+       MODAL FUNCTIONS
+    ========================================================= */
+
+    function openModal(id) {
+        document.getElementById(id).style.display = "block";
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+
+    window.onclick = function(event) {
+
+        if (event.target.classList.contains("modal")) {
+            event.target.style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+
+    };
+
+
+    /* =========================================================
+       TOAST
+    ========================================================= */
+
+    function showToast(message) {
+
+        const toast = document.getElementById("toast");
+
+        toast.innerText = message;
+        toast.style.display = "block";
+
+        setTimeout(function() {
+            toast.style.display = "none";
+        }, 2500);
+    }
+
+
+    /* =========================================================
+       MOBILE MENU
+    ========================================================= */
+
+    function toggleMobileMenu() {
+
+        const links = document.querySelector(".nav-links");
+
+        if (links.style.display === "flex") {
+
+            links.style.display = "";
+
+        } else {
+
+            links.style.display = "flex";
+            links.style.flexDirection = "column";
+            links.style.position = "absolute";
+            links.style.top = "70px";
+            links.style.left = "0";
+            links.style.right = "0";
+            links.style.padding = "20px";
+            links.style.background = "white";
+            links.style.borderBottom = "1px solid #e2e8f0";
+
+        }
+    }
+
+
+    /* =========================================================
+       SOS
+    ========================================================= */
+
+    function openSOS() {
+        openModal("sosModal");
+    }
+
+
+    /* =========================================================
+       ALERT FILTER
+    ========================================================= */
+
+    function filterAlerts(type, button) {
+
+        document.querySelectorAll(".filter-btn").forEach(function(btn) {
+            btn.classList.remove("active");
+        });
+
+        button.classList.add("active");
+
+        document.querySelectorAll(".alert-card").forEach(function(card) {
+
+            if (type === "all" || card.dataset.type === type) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+
+        });
+    }
+
+
+    /* =========================================================
+       DISASTER GUIDES
+    ========================================================= */
+
+    const guides = {
+
+        Flood: {
+
+            intro:
+                "Flooding can occur after heavy rainfall, overflowing rivers, drainage failure or storm surge. Move to safe higher ground when flooding becomes dangerous.",
+
+            precautions: [
+                "Know whether your home or area is located in a flood-prone zone.",
+                "Keep important documents and valuables in waterproof containers.",
+                "Identify nearby higher ground and emergency shelters.",
+                "Keep emergency supplies, drinking water and medicines ready.",
+                "Monitor official weather and disaster warnings."
+            ],
+
+            before:
+                "Prepare an emergency kit, identify evacuation routes, protect electrical equipment from water and keep important documents in waterproof bags.",
+
+            during:
+                "Move to higher ground when instructed. Avoid walking or driving through floodwater because water depth and current may be difficult to judge.",
+
+            after:
+                "Return home only when authorities say it is safe. Avoid contaminated water, damaged electrical systems and unstable structures.",
+
+            dos: [
+                "Follow official evacuation instructions.",
+                "Keep a flashlight and charged phone with you.",
+                "Move children, elderly people and vulnerable persons to safe areas.",
+                "Use bottled or treated water after flooding.",
+                "Report dangerous conditions to emergency authorities."
+            ],
+
+            donts: [
+                "Do not walk through fast-moving floodwater.",
+                "Do not drive through flooded roads.",
+                "Do not touch electrical equipment while standing in water.",
+                "Do not drink untreated floodwater.",
+                "Do not return to an evacuated area until officially permitted."
+            ],
+
+            emergency:
+                "If floodwater is rapidly rising, move immediately to higher ground and call emergency services if you are trapped or require rescue."
+
+        },
+
+
+        Cyclone: {
+
+            intro:
+                "Cyclones can bring destructive winds, heavy rainfall, flooding and storm surges. Early preparation and evacuation can significantly reduce risk.",
+
+            precautions: [
+                "Monitor official cyclone warnings and weather updates.",
+                "Secure doors, windows, roofs and loose outdoor objects.",
+                "Keep emergency food, water, medicines and batteries ready.",
+                "Know the nearest cyclone shelter or safe evacuation location.",
+                "Charge mobile phones and power banks before the storm."
+            ],
+
+            before:
+                "Secure loose objects, trim dangerous branches where appropriate, store emergency supplies and evacuate coastal or vulnerable areas when authorities instruct you to do so.",
+
+            during:
+                "Stay indoors away from windows and glass. Remain inside until authorities confirm that dangerous conditions have passed.",
+
+            after:
+                "Avoid fallen power lines, damaged buildings and flooded roads. Continue monitoring official announcements before travelling.",
+
+            dos: [
+                "Stay indoors during strong winds.",
+                "Keep emergency communication devices charged.",
+                "Follow evacuation orders immediately.",
+                "Keep doors and windows securely closed.",
+                "Help vulnerable neighbours when it is safe to do so."
+            ],
+
+            donts: [
+                "Do not go outside during the storm to observe conditions.",
+                "Do not stand near windows or glass doors.",
+                "Do not touch fallen electrical wires.",
+                "Do not ignore evacuation warnings.",
+                "Do not travel through flooded coastal roads."
+            ],
+
+            emergency:
+                "If authorities issue an evacuation order, leave early using the designated evacuation route and move to an approved shelter."
+        },
+
+
+        Earthquake: {
+
+            intro:
+                "Earthquakes can occur without warning. The safest immediate response indoors is generally to Drop, Cover and Hold On.",
+
+            precautions: [
+                "Identify safe places under strong tables or desks.",
+                "Secure heavy furniture and appliances.",
+                "Keep emergency supplies easily accessible.",
+                "Learn the emergency exits of your building.",
+                "Practice Drop, Cover and Hold On with family members."
+            ],
+
+            before:
+                "Secure heavy furniture, keep emergency supplies ready and identify safe locations away from windows and objects that may fall.",
+
+            during:
+                "Drop to your hands and knees, take cover under a sturdy table or desk and hold on until the shaking stops.",
+
+            after:
+                "Check yourself and others for injuries. Leave damaged buildings carefully and expect possible aftershocks.",
+
+            dos: [
+                "Drop, Cover and Hold On.",
+                "Stay away from windows and glass.",
+                "Use stairs instead of elevators if evacuation is required.",
+                "Check for injuries after the shaking stops.",
+                "Follow official emergency instructions."
+            ],
+
+            donts: [
+                "Do not run outside during strong shaking.",
+                "Do not stand near windows.",
+                "Do not use elevators during an earthquake emergency.",
+                "Do not enter visibly damaged buildings.",
+                "Do not touch damaged electrical wires."
+            ],
+
+            emergency:
+                "During strong shaking, protect your head and body under sturdy furniture. After shaking stops, move away from damaged structures and follow official instructions."
+        },
+
+
+        Fire: {
+
+            intro:
+                "Fire spreads rapidly and produces dangerous smoke. Early detection, safe evacuation and avoiding smoke inhalation are critical.",
+
+            precautions: [
+                "Install and regularly check smoke alarms.",
+                "Keep fire exits and stairways clear.",
+                "Avoid overloading electrical sockets.",
+                "Store flammable materials safely.",
+                "Learn how to use an appropriate fire extinguisher."
+            ],
+
+            before:
+                "Create a family fire escape plan, keep exits clear and check electrical appliances and cooking equipment regularly.",
+
+            during:
+                "Raise the alarm, evacuate immediately and stay low if smoke is present. Use stairs rather than elevators.",
+
+            after:
+                "Do not re-enter a burned or damaged building until authorities declare it safe.",
+
+            dos: [
+                "Alert people nearby.",
+                "Leave through the safest available exit.",
+                "Stay low under smoke.",
+                "Call emergency services.",
+                "Close doors behind you if possible without delaying evacuation."
+            ],
+
+            donts: [
+                "Do not hide inside a room without notifying rescuers.",
+                "Do not use elevators during a fire.",
+                "Do not return inside for belongings.",
+                "Do not open a door that feels extremely hot.",
+                "Do not attempt to fight a large or rapidly spreading fire."
+            ],
+
+            emergency:
+                "If there is a fire, evacuate immediately and call the fire service. Never delay evacuation to collect personal belongings."
+        },
+
+
+        Tsunami: {
+
+            intro:
+                "A tsunami can arrive after an undersea earthquake or other disturbance. Coastal residents must respond quickly to warnings and natural warning signs.",
+
+            precautions: [
+                "Know whether your area is exposed to tsunami risk.",
+                "Identify routes leading to higher ground.",
+                "Learn official tsunami warning signals.",
+                "Keep emergency supplies ready.",
+                "If a strong earthquake occurs near the coast, be prepared to move inland or to higher ground."
+            ],
+
+            before:
+                "Identify evacuation routes and safe high-ground locations. Keep an emergency kit and family communication plan ready.",
+
+            during:
+                "After an official tsunami warning or strong coastal earthquake, move quickly to higher ground or inland areas as directed.",
+
+            after:
+                "Stay away from coastal areas until authorities issue an all-clear because multiple waves can occur.",
+
+            dos: [
+                "Move quickly to higher ground.",
+                "Follow official evacuation routes.",
+                "Listen to emergency broadcasts.",
+                "Help children and vulnerable people when safe.",
+                "Remain away from the coast until authorities declare it safe."
+            ],
+
+            donts: [
+                "Do not go to the beach to watch the waves.",
+                "Do not ignore tsunami warnings.",
+                "Do not return after the first wave.",
+                "Do not use flooded roads unless authorities direct you.",
+                "Do not assume a small first wave means the danger has ended."
+            ],
+
+            emergency:
+                "If you feel a strong or long earthquake near the coast, move inland or to higher ground immediately rather than waiting for a warning."
+        },
+
+
+        Landslide: {
+
+            intro:
+                "Landslides can occur on unstable slopes, particularly after heavy rainfall, earthquakes or construction activity.",
+
+            precautions: [
+                "Avoid building or staying close to unstable steep slopes.",
+                "Watch for cracks in roads, walls and the ground.",
+                "Monitor rainfall and local warnings during heavy rain.",
+                "Keep drainage channels clear where appropriate.",
+                "Know the safest evacuation route from your area."
+            ],
+
+            before:
+                "Learn about local landslide risks, monitor warning signs and prepare to evacuate if authorities issue an alert.",
+
+            during:
+                "Move away from the path of the landslide as quickly as possible. Avoid valleys, channels and unstable slopes.",
+
+            after:
+                "Stay away from the affected area because additional landslides may occur. Report damaged roads, bridges or buildings.",
+
+            dos: [
+                "Move to a safer location when warning signs appear.",
+                "Follow evacuation instructions.",
+                "Watch for additional slope movement.",
+                "Report blocked roads and dangerous areas.",
+                "Keep emergency supplies ready."
+            ],
+
+            donts: [
+                "Do not approach an active landslide.",
+                "Do not cross debris flows.",
+                "Do not remain near unstable slopes.",
+                "Do not ignore evacuation warnings.",
+                "Do not enter damaged buildings without official clearance."
+            ],
+
+            emergency:
+                "If a landslide is moving toward your location, evacuate immediately to a safe area away from slopes, valleys and debris channels."
+        },
+
+
+        Heatwave: {
+
+            intro:
+                "Heatwaves can cause dehydration, heat exhaustion and heatstroke. Reduce exposure to extreme heat and remain hydrated.",
+
+            precautions: [
+                "Drink water regularly throughout the day.",
+                "Avoid unnecessary outdoor activity during peak heat.",
+                "Wear lightweight and loose-fitting clothing.",
+                "Keep indoor spaces cool and well ventilated.",
+                "Check on elderly people, children and vulnerable individuals."
+            ],
+
+            before:
+                "Keep drinking water available, plan outdoor activities during cooler periods and prepare fans or other cooling arrangements.",
+
+            during:
+                "Stay in a cool or shaded location, drink water regularly and avoid strenuous activity during the hottest hours.",
+
+            after:
+                "Continue hydration and rest. If symptoms such as confusion, fainting or very high body temperature occur, seek urgent medical assistance.",
+
+            dos: [
+                "Drink water frequently.",
+                "Use shade or air-conditioned spaces when possible.",
+                "Wear light-colored, loose clothing.",
+                "Take regular breaks during physical activity.",
+                "Check on vulnerable family members."
+            ],
+
+            donts: [
+                "Do not stay under direct sunlight for long periods.",
+                "Do not perform strenuous activity during extreme heat.",
+                "Do not wait until you are extremely thirsty before drinking water.",
+                "Do not leave children or pets in parked vehicles.",
+                "Do not ignore signs of heat illness."
+            ],
+
+            emergency:
+                "If someone becomes confused, unconscious or develops severe heat illness symptoms, move them to a cool area and seek emergency medical help immediately."
+        }
+
+    };
+
+
+    /* =========================================================
+       OPEN GUIDE
+    ========================================================= */
+
+    function openGuide(type) {
+
+        const guide = guides[type];
+
+        if (!guide) {
+            showToast("Guide information unavailable.");
+            return;
+        }
+
+        document.getElementById("guideTitle").innerText =
+            type + " Safety Guide";
+
+        document.getElementById("guideIntro").innerText =
+            guide.intro;
+
+        document.getElementById("guideBefore").innerText =
+            guide.before;
+
+        document.getElementById("guideDuring").innerText =
+            guide.during;
+
+        document.getElementById("guideAfter").innerText =
+            guide.after;
+
+        document.getElementById("guideEmergency").innerText =
+            guide.emergency;
+
+
+        const precautions =
+            document.getElementById("guidePrecautions");
+
+        precautions.innerHTML = "";
+
+        guide.precautions.forEach(function(item) {
+
+            const li = document.createElement("li");
+
+            li.innerText = item;
+
+            precautions.appendChild(li);
+
+        });
+
+
+        const dos =
+            document.getElementById("guideDos");
+
+        dos.innerHTML = "";
+
+        guide.dos.forEach(function(item) {
+
+            const li = document.createElement("li");
+
+            li.innerText = item;
+
+            dos.appendChild(li);
+
+        });
+
+
+        const donts =
+            document.getElementById("guideDonts");
+
+        donts.innerHTML = "";
+
+        guide.donts.forEach(function(item) {
+
+            const li = document.createElement("li");
+
+            li.innerText = item;
+
+            donts.appendChild(li);
+
+        });
+
+
+        openModal("guideModal");
+    }
+
+
+    /* =========================================================
+       LEAFLET MAP
+    ========================================================= */
+
+    const map = L.map("map").setView([13.0827, 80.2707], 11);
+
+    L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+            maxZoom: 19,
+            attribution: "&copy; OpenStreetMap contributors"
+        }
+    ).addTo(map);
+
+
+    const highRiskIcon = L.divIcon({
+        className: "",
+        html:
+            '<div style="width:18px;height:18px;background:#dc2626;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.3);"></div>',
+        iconSize: [18, 18]
+    });
+
+    const mediumRiskIcon = L.divIcon({
+        className: "",
+        html:
+            '<div style="width:18px;height:18px;background:#f59e0b;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.3);"></div>',
+        iconSize: [18, 18]
+    });
+
+    const safeIcon = L.divIcon({
+        className: "",
+        html:
+            '<div style="width:18px;height:18px;background:#16a34a;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.3);"></div>',
+        iconSize: [18, 18]
+    });
+
+
+    L.marker([13.0827, 80.2707], {
+        icon: highRiskIcon
+    })
+    .addTo(map)
+    .bindPopup("<b>Chennai</b><br>Flood monitoring zone");
+
+
+    L.marker([13.0475, 80.2090], {
+        icon: mediumRiskIcon
+    })
+    .addTo(map)
+    .bindPopup("<b>Urban Risk Zone</b><br>Medium risk");
+
+
+    L.marker([13.0500, 80.2824], {
+        icon: safeIcon
+    })
+    .addTo(map)
+    .bindPopup("<b>Emergency Safe Zone</b><br>Designated shelter");
+
+
+    L.marker([12.9716, 80.2200], {
+        icon: safeIcon
+    })
+    .addTo(map)
+    .bindPopup("<b>Relief Center</b><br>Emergency assistance");
+
+
+    /* =========================================================
+       CHECKLIST LOCAL STORAGE
+    ========================================================= */
+
+    function saveChecklist() {
+
+        const items = [];
+
+        document.querySelectorAll(".check-item input").forEach(function(item) {
+
+            items.push({
+                id: item.id,
+                checked: item.checked
+            });
+
+        });
+
+        localStorage.setItem(
+            "disasterChecklist",
+            JSON.stringify(items)
+        );
+
+        showToast("Emergency checklist saved.");
+    }
+
+
+    function loadChecklist() {
+
+        const saved =
+            JSON.parse(
+                localStorage.getItem("disasterChecklist")
+            );
+
+        if (!saved) return;
+
+        saved.forEach(function(item) {
+
+            const checkbox =
+                document.getElementById(item.id);
+
+            if (checkbox) {
+                checkbox.checked = item.checked;
+            }
+
+        });
+
+    }
+
+
+    document.querySelectorAll(".check-item input")
+    .forEach(function(input) {
+
+        input.addEventListener("change", function() {
+
+            this.parentElement.classList.toggle(
+                "checked",
+                this.checked
+            );
+
+        });
+
+    });
+
+
+    /* =========================================================
+       CONTACTS
+    ========================================================= */
+
+    function getContacts() {
+
+        return JSON.parse(
+            localStorage.getItem("emergencyContacts") || "[]"
+        );
+
+    }
+
+
+    function addContact() {
+
+        const name =
+            document.getElementById("contactName").value.trim();
+
+        const phone =
+            document.getElementById("contactPhone").value.trim();
+
+        if (!name || !phone) {
+
+            showToast("Enter name and phone number.");
+
+            return;
+        }
+
+        const contacts = getContacts();
+
+        contacts.push({
+            name: name,
+            phone: phone
+        });
+
+        localStorage.setItem(
+            "emergencyContacts",
+            JSON.stringify(contacts)
+        );
+
+        document.getElementById("contactName").value = "";
+        document.getElementById("contactPhone").value = "";
+
+        renderContacts();
+
+        showToast("Emergency contact added.");
+    }
+
+
+    function deleteContact(index) {
+
+        const contacts = getContacts();
+
+        contacts.splice(index, 1);
+
+        localStorage.setItem(
+            "emergencyContacts",
+            JSON.stringify(contacts)
+        );
+
+        renderContacts();
+
+        showToast("Contact deleted.");
+    }
+
+
+    function renderContacts() {
+
+        const list =
+            document.getElementById("contactList");
+
+        const contacts = getContacts();
+
+        list.innerHTML = "";
+
+        if (contacts.length === 0) {
+
+            list.innerHTML =
+                '<p style="color:#64748b;font-size:14px;">No contacts saved yet.</p>';
+
+            return;
+        }
+
+        contacts.forEach(function(contact, index) {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "saved-contact";
+
+            div.innerHTML = `
+                <div>
+                    <strong>${escapeHTML(contact.name)}</strong>
+                    <br>
+                    <span style="font-size:13px;color:#64748b;">
+                        ${escapeHTML(contact.phone)}
+                    </span>
+                </div>
+
+                <div>
+                    <a
+                        href="tel:${escapeHTML(contact.phone)}"
+                        class="btn btn-primary"
+                    >
+                        Call
+                    </a>
+
+                    <button
+                        class="btn btn-outline"
+                        onclick="deleteContact(${index})"
+                    >
+                        Delete
+                    </button>
+                </div>
+            `;
+
+            list.appendChild(div);
+
+        });
+    }
+
+
+    function escapeHTML(value) {
+
+        return value
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    /* =========================================================
+       AI RISK PREDICTION
+    ========================================================= */
+
+    function predictRisk() {
+
+        const rainfall =
+            Number(document.getElementById("rainfall").value);
+
+        const waterLevel =
+            Number(document.getElementById("waterLevel").value);
+
+        const humidity =
+            Number(document.getElementById("humidity").value);
+
+
+        if (
+            !rainfall &&
+            !waterLevel &&
+            !humidity
+        ) {
+
+            showToast("Enter environmental values first.");
+
+            return;
+        }
+
+
+        let score = 0;
+
+        if (rainfall >= 100) {
+            score += 3;
+        } else if (rainfall >= 50) {
+            score += 2;
+        } else if (rainfall >= 20) {
+            score += 1;
+        }
+
+
+        if (waterLevel >= 5) {
+            score += 3;
+        } else if (waterLevel >= 3) {
+            score += 2;
+        } else if (waterLevel >= 1.5) {
+            score += 1;
+        }
+
+
+        if (humidity >= 90) {
+            score += 2;
+        } else if (humidity >= 75) {
+            score += 1;
+        }
+
+
+        let level;
+        let description;
+
+
+        if (score >= 6) {
+
+            level = "HIGH RISK";
+
+            description =
+                "The environmental conditions indicate a high potential flood risk. Follow official warnings and prepare for possible evacuation.";
+
+        } else if (score >= 3) {
+
+            level = "MEDIUM RISK";
+
+            description =
+                "The environmental conditions indicate moderate flood risk. Continue monitoring rainfall, water levels and official alerts.";
+
+        } else {
+
+            level = "LOW RISK";
+
+            description =
+                "The current sample values indicate relatively low flood risk. Continue monitoring local conditions.";
+
+        }
+
+
+        const box =
+            document.getElementById("predictionBox");
+
+        document.getElementById("predictionTitle")
+            .innerText = level;
+
+        document.getElementById("predictionText")
+            .innerText = description;
+
+        box.style.display = "block";
+    }
+
+
+    /* =========================================================
+       INCIDENT REPORT
+    ========================================================= */
+
+    function submitIncident() {
+
+        const type =
+            document.getElementById("incidentType").value;
+
+        const location =
+            document.getElementById("incidentLocation").value.trim();
+
+        const description =
+            document.getElementById("incidentDescription").value.trim();
+
+
+        if (!location || !description) {
+
+            showToast("Please complete all report fields.");
+
+            return;
+        }
+
+
+        const reports =
+            JSON.parse(
+                localStorage.getItem("incidentReports") || "[]"
+            );
+
+
+        reports.push({
+            type: type,
+            location: location,
+            description: description,
+            time: new Date().toLocaleString()
+        });
+
+
+        localStorage.setItem(
+            "incidentReports",
+            JSON.stringify(reports)
+        );
+
+
+        document.getElementById("incidentLocation").value = "";
+        document.getElementById("incidentDescription").value = "";
+
+
+        updateReportCount();
+
+        showToast("Incident report submitted successfully.");
+    }
+
+
+    function updateReportCount() {
+
+        const reports =
+            JSON.parse(
+                localStorage.getItem("incidentReports") || "[]"
+            );
+
+        const baseCount = 8;
+
+        document.getElementById("reportCount")
+            .innerText = baseCount + reports.length;
+    }
+
+
+    /* =========================================================
+       LOGIN
+    ========================================================= */
+
+    function loginUser() {
+
+        const email =
+            document.getElementById("loginEmail").value.trim();
+
+        const password =
+            document.getElementById("loginPassword").value.trim();
+
+        if (!email || !password) {
+
+            showToast("Enter email and password.");
+
+            return;
+        }
+
+        localStorage.setItem(
+            "loggedInUser",
+            email
+        );
+
+        closeModal("loginModal");
+
+        showToast("Login successful.");
+    }
+
+
+    /* =========================================================
+       REGISTER
+    ========================================================= */
+
+    function registerUser() {
+
+        const name =
+            document.getElementById("registerName").value.trim();
+
+        const email =
+            document.getElementById("registerEmail").value.trim();
+
+        const password =
+            document.getElementById("registerPassword").value.trim();
+
+
+        if (!name || !email || !password) {
+
+            showToast("Please complete registration.");
+
+            return;
+        }
+
+
+        localStorage.setItem(
+            "registeredUser",
+            JSON.stringify({
+                name: name,
+                email: email
+            })
+        );
+
+
+        closeModal("registerModal");
+
+        showToast("Account created successfully.");
+    }
+
+
+    /* =========================================================
+       CHART
+    ========================================================= */
+
+    const chartContext =
+        document.getElementById("disasterChart");
+
+    new Chart(chartContext, {
+
+        type: "bar",
+
+        data: {
+
+            labels: [
+                "Flood",
+                "Cyclone",
+                "Fire",
+                "Earthquake",
+                "Heatwave",
+                "Landslide"
+            ],
+
+            datasets: [
+                {
+                    label: "Reported Incidents",
+
+                    data: [
+                        18,
+                        11,
+                        8,
+                        5,
+                        15,
+                        7
+                    ],
+
+                    borderWidth: 1
+                }
+            ]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+
+            scales: {
+
+                y: {
+                    beginAtZero: true
+                }
+
+            }
+
+        }
+
+    });
+
+
+    /* =========================================================
+       INITIALIZE
+    ========================================================= */
+
+    document.addEventListener("DOMContentLoaded", function() {
+
+        loadChecklist();
+
+        renderContacts();
+
+        updateReportCount();
+
+    });
+
+</script>
+
+</body>
+</html>
